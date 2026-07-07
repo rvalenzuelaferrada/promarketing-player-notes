@@ -48,7 +48,8 @@ it('lists the notes with date, author and content', function () {
         ->test('pages::player-notes.index')
         ->set('selectedPlayerId', $player->id)
         ->assertSee('Alice Agent')
-        ->assertSee('VIP player, handle with care.');
+        ->assertSee('VIP player, handle with care.')
+        ->assertSee('/1000');
 });
 
 it('validates that the note is not empty', function () {

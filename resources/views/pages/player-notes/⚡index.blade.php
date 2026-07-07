@@ -144,7 +144,12 @@ new #[Layout('components.layouts.app')] class extends Component
     {{-- Add note form (requires a selected player and permission) --}}
     @if ($this->selectedPlayer)
         @can('add-player-notes')
-            <form wire:submit="save" class="mt-6 space-y-2">
+            <form
+                wire:submit="save"
+                x-data="{ length: 0 }"
+                x-effect="length = ($wire.content ?? '').length"
+                class="mt-6 space-y-2"
+            >
                 <label for="content" class="block text-sm font-medium text-gray-700">Agregar una nota</label>
                 <textarea
                     id="content"
@@ -154,12 +159,22 @@ new #[Layout('components.layouts.app')] class extends Component
                     class="block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     placeholder="Escribe una nota interna sobre este jugador..."
                 ></textarea>
-                @error('content')
-                    <p class="text-sm text-red-600">{{ $message }}</p>
-                @enderror
+
+                <div class="flex items-center justify-between">
+                    <div>
+                        @error('content')
+                            <p class="text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <span class="text-xs text-gray-400">
+                        <span x-text="length">0</span>/1000
+                    </span>
+                </div>
+
                 <button
                     type="submit"
-                    class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500"
+                    x-bind:disabled="length === 0"
+                    class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-indigo-600"
                 >
                     Guardar nota
                 </button>
