@@ -79,3 +79,12 @@ it('hides the form and forbids saving for users without permission', function ()
 it('requires authentication to reach the panel', function () {
     $this->get(route('player-notes'))->assertRedirect(route('login'));
 });
+
+it('renders the panel as a full page inside the layout', function () {
+    $agent = User::factory()->canAddPlayerNotes()->create();
+
+    $this->actingAs($agent)
+        ->get(route('player-notes'))
+        ->assertOk()
+        ->assertSee('Support panel');
+});

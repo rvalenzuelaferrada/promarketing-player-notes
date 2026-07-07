@@ -5,10 +5,11 @@ use App\Models\User;
 use App\Repositories\Contracts\PlayerNoteRepositoryInterface;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
-new class extends Component
+new #[Layout('components.layouts.app')] class extends Component
 {
     /**
      * The id of the player whose notes are being viewed.
