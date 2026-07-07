@@ -22,6 +22,21 @@ it('stores a note for the selected player in the database', function () {
     ])->exists())->toBeTrue();
 });
 
+it('shows the latest notes across all players when none is selected', function () {
+    $agent = User::factory()->canAddPlayerNotes()->create();
+    $player = User::factory()->create(['name' => 'Charlie Player']);
+    PlayerNote::factory()->for($player, 'player')->for($agent, 'author')->create([
+        'content' => 'Recent cross-player note.',
+    ]);
+
+    Livewire::actingAs($agent)
+        ->test('pages::player-notes.index')
+        ->assertSet('selectedPlayerId', null)
+        ->assertSee('Latest notes')
+        ->assertSee('Charlie Player')
+        ->assertSee('Recent cross-player note.');
+});
+
 it('lists the notes with date, author and content', function () {
     $agent = User::factory()->canAddPlayerNotes()->create(['name' => 'Alice Agent']);
     $player = User::factory()->create();

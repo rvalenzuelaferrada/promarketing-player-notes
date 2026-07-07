@@ -45,18 +45,20 @@ new #[Layout('components.layouts.app')] class extends Component
     }
 
     /**
-     * The notes written about the selected player, newest first.
+     * The notes to display: the selected player's notes, or the latest
+     * notes across all players when no player is selected.
      *
      * @return Collection<int, PlayerNote>
      */
     #[Computed]
     public function notes(): Collection
     {
+        $repository = app(PlayerNoteRepositoryInterface::class);
         $player = $this->selectedPlayer;
 
         return $player === null
-            ? new Collection
-            : app(PlayerNoteRepositoryInterface::class)->getForPlayer($player);
+            ? $repository->getLatest()
+            : $repository->getForPlayer($player);
     }
 
     /**
@@ -126,8 +128,8 @@ new #[Layout('components.layouts.app')] class extends Component
         @enderror
     </div>
 
+    {{-- Add note form (requires a selected player and permission) --}}
     @if ($this->selectedPlayer)
-        {{-- Add note form (only for users with permission) --}}
         @can('add-player-notes')
             <form wire:submit="save" class="mt-6 space-y-2">
                 <label for="content" class="block text-sm font-medium text-gray-700">Add a note</label>
@@ -150,33 +152,41 @@ new #[Layout('components.layouts.app')] class extends Component
                 </button>
             </form>
         @endcan
-
-        {{-- Notes list --}}
-        <table class="mt-8 w-full text-left text-sm">
-            <thead>
-                <tr class="border-b border-gray-200 text-gray-500">
-                    <th class="py-2 pr-4 font-medium">Date</th>
-                    <th class="py-2 pr-4 font-medium">Author</th>
-                    <th class="py-2 font-medium">Note</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($this->notes as $note)
-                    <tr wire:key="note-{{ $note->id }}" class="border-b border-gray-100 align-top">
-                        <td class="py-2 pr-4 whitespace-nowrap text-gray-500">
-                            {{ $note->created_at->format('Y-m-d H:i') }}
-                        </td>
-                        <td class="py-2 pr-4 whitespace-nowrap text-gray-700">{{ $note->author->name }}</td>
-                        <td class="py-2 text-gray-900">{{ $note->content }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="3" class="py-4 text-center text-gray-400">No notes yet.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    @else
-        <p class="mt-8 text-center text-sm text-gray-400">Select a player to view their notes.</p>
     @endif
+
+    {{-- Notes list: latest across all players, or the selected player's notes --}}
+    <h2 class="mt-8 text-sm font-semibold text-gray-700">
+        {{ $this->selectedPlayer ? 'Notes for '.$this->selectedPlayer->name : 'Latest notes' }}
+    </h2>
+
+    <table class="mt-2 w-full text-left text-sm">
+        <thead>
+            <tr class="border-b border-gray-200 text-gray-500">
+                <th class="py-2 pr-4 font-medium">Date</th>
+                @unless ($this->selectedPlayer)
+                    <th class="py-2 pr-4 font-medium">Player</th>
+                @endunless
+                <th class="py-2 pr-4 font-medium">Author</th>
+                <th class="py-2 font-medium">Note</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($this->notes as $note)
+                <tr wire:key="note-{{ $note->id }}" class="border-b border-gray-100 align-top">
+                    <td class="py-2 pr-4 whitespace-nowrap text-gray-500">
+                        {{ $note->created_at->format('Y-m-d H:i') }}
+                    </td>
+                    @unless ($this->selectedPlayer)
+                        <td class="py-2 pr-4 whitespace-nowrap text-gray-700">{{ $note->player->name }}</td>
+                    @endunless
+                    <td class="py-2 pr-4 whitespace-nowrap text-gray-700">{{ $note->author->name }}</td>
+                    <td class="py-2 text-gray-900">{{ $note->content }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="4" class="py-4 text-center text-gray-400">No notes yet.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
 </div>
