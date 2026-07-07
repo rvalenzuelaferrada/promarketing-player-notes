@@ -6,7 +6,7 @@
         </p>
 
         {{-- Manual login form --}}
-        <form method="POST" action="{{ route('login') }}" class="mt-6 space-y-3 rounded-lg border border-gray-200 bg-white p-4">
+        <form method="POST" action="{{ route('login.store') }}" class="mt-6 space-y-3 rounded-lg border border-gray-200 bg-white p-4">
             @csrf
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
@@ -42,7 +42,7 @@
                         @else
                             <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500">Read-only</span>
                         @endif
-                        <form method="POST" action="{{ route('login') }}">
+                        <form method="POST" action="{{ route('login.store') }}">
                             @csrf
                             <input type="hidden" name="email" value="{{ $demoUser->email }}">
                             <input type="hidden" name="password" value="password">
