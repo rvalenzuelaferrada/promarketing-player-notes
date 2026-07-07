@@ -22,6 +22,16 @@ it('stores a note for the selected player in the database', function () {
     ])->exists())->toBeTrue();
 });
 
+it('shows the note form with a hint when no player is selected yet', function () {
+    $agent = User::factory()->canAddPlayerNotes()->create();
+
+    Livewire::actingAs($agent)
+        ->test('pages::player-notes.index')
+        ->assertSet('selectedPlayerId', null)
+        ->assertSee('Agregar una nota')
+        ->assertSee('Selecciona un jugador para agregar una nota.');
+});
+
 it('shows the latest notes across all players when none is selected', function () {
     $agent = User::factory()->canAddPlayerNotes()->create();
     $player = User::factory()->create(['name' => 'Charlie Player']);

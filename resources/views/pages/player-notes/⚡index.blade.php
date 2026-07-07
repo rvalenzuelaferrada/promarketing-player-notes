@@ -141,46 +141,48 @@ new #[Layout('components.layouts.app')] class extends Component
         @enderror
     </div>
 
-    {{-- Add note form (requires a selected player and permission) --}}
-    @if ($this->selectedPlayer)
-        @can('add-player-notes')
-            <form
-                wire:submit="save"
-                x-data="{ length: 0 }"
-                x-effect="length = ($wire.content ?? '').length"
-                class="mt-6 space-y-2"
-            >
-                <label for="content" class="block text-sm font-medium text-gray-700">Agregar una nota</label>
-                <textarea
-                    id="content"
-                    wire:model="content"
-                    rows="3"
-                    maxlength="1000"
-                    class="block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    placeholder="Escribe una nota interna sobre este jugador..."
-                ></textarea>
+    {{-- Add note form: always visible with permission, disabled until a player is selected --}}
+    @can('add-player-notes')
+        <form
+            wire:submit="save"
+            x-data="{ length: 0 }"
+            x-effect="length = ($wire.content ?? '').length"
+            class="mt-6 space-y-2"
+        >
+            <label for="content" class="block text-sm font-medium text-gray-700">Agregar una nota</label>
+            <textarea
+                id="content"
+                wire:model="content"
+                rows="3"
+                maxlength="1000"
+                x-bind:disabled="! $wire.selectedPlayerId"
+                class="block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400"
+                placeholder="Escribe una nota interna sobre este jugador..."
+            ></textarea>
 
-                <div class="flex items-center justify-between">
-                    <div>
-                        @error('content')
-                            <p class="text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    <span class="text-xs text-gray-400">
-                        <span x-text="length">0</span>/1000
-                    </span>
+            <div class="flex items-center justify-between">
+                <div>
+                    @error('content')
+                        <p class="text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                    @unless ($this->selectedPlayer)
+                        <p class="text-sm text-gray-400">Selecciona un jugador para agregar una nota.</p>
+                    @endunless
                 </div>
+                <span class="text-xs text-gray-400">
+                    <span x-text="length">0</span>/1000
+                </span>
+            </div>
 
-                <button
-                    type="submit"
-                    x-bind:disabled="length === 0"
-                    class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-indigo-600"
-                >
-                    Guardar nota
-                </button>
-            </form>
-        @endcan
-    @endif
+            <button
+                type="submit"
+                x-bind:disabled="length === 0 || ! $wire.selectedPlayerId"
+                class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-indigo-600"
+            >
+                Guardar nota
+            </button>
+        </form>
+    @endcan
 
     {{-- Notes list: latest across all players, or the selected player's notes --}}
     <h2 class="mt-8 text-sm font-semibold text-gray-700">
