@@ -17,6 +17,7 @@ use Illuminate\Support\Str;
  * @property int $id
  * @property string $name
  * @property string $email
+ * @property bool $can_add_player_notes
  * @property Carbon|null $email_verified_at
  * @property string $password
  * @property string|null $remember_token
@@ -40,6 +41,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'can_add_player_notes' => 'boolean',
         ];
     }
 

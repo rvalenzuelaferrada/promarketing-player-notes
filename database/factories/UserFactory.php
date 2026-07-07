@@ -42,4 +42,14 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    /**
+     * Indicate that the user is allowed to add player notes.
+     */
+    public function canAddPlayerNotes(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'can_add_player_notes' => true,
+        ]);
+    }
 }
