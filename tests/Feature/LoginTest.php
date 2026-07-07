@@ -25,7 +25,7 @@ it('rejects invalid credentials', function () {
 });
 
 it('shows the login screen at the root url', function () {
-    $this->get('/')->assertOk()->assertSee('Sign in');
+    $this->get('/')->assertOk()->assertSee('Iniciar sesión');
 });
 
 it('redirects an authenticated user away from the login screen', function () {

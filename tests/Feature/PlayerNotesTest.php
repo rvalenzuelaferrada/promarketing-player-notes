@@ -32,7 +32,7 @@ it('shows the latest notes across all players when none is selected', function (
     Livewire::actingAs($agent)
         ->test('pages::player-notes.index')
         ->assertSet('selectedPlayerId', null)
-        ->assertSee('Latest notes')
+        ->assertSee('Últimas notas')
         ->assertSee('Charlie Player')
         ->assertSee('Recent cross-player note.');
 });
@@ -84,7 +84,7 @@ it('hides the form and forbids saving for users without permission', function ()
     Livewire::actingAs($viewer)
         ->test('pages::player-notes.index')
         ->set('selectedPlayerId', $player->id)
-        ->assertDontSee('Add a note')
+        ->assertDontSee('Agregar una nota')
         ->call('save')
         ->assertForbidden();
 
@@ -101,5 +101,5 @@ it('renders the panel as a full page inside the layout', function () {
     $this->actingAs($agent)
         ->get(route('player-notes'))
         ->assertOk()
-        ->assertSee('Support panel');
+        ->assertSee('Panel de soporte');
 });

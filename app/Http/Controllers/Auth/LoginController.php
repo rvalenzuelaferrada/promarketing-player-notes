@@ -41,7 +41,7 @@ class LoginController extends Controller
 
         if (! Auth::attempt($credentials)) {
             throw ValidationException::withMessages([
-                'email' => 'These credentials do not match our records.',
+                'email' => 'Estas credenciales no coinciden con nuestros registros.',
             ]);
         }
 

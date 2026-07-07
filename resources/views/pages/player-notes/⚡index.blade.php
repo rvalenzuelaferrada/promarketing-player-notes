@@ -23,6 +23,19 @@ new #[Layout('components.layouts.app')] class extends Component
     public string $content = '';
 
     /**
+     * Spanish validation messages for the note field.
+     *
+     * @return array<string, string>
+     */
+    protected function messages(): array
+    {
+        return [
+            'content.required' => 'La nota no puede estar vacía.',
+            'content.max' => 'La nota no puede superar los 1000 caracteres.',
+        ];
+    }
+
+    /**
      * The users that can be selected as the note subject.
      *
      * @return Collection<int, User>
@@ -71,7 +84,7 @@ new #[Layout('components.layouts.app')] class extends Component
         $player = $this->selectedPlayer;
 
         if ($player === null) {
-            $this->addError('selectedPlayerId', 'Please select a player first.');
+            $this->addError('selectedPlayerId', 'Selecciona un jugador primero.');
 
             return;
         }
@@ -93,32 +106,32 @@ new #[Layout('components.layouts.app')] class extends Component
 <div class="mx-auto max-w-3xl p-6">
     <div class="flex items-start justify-between gap-4">
         <div>
-            <h1 class="text-xl font-semibold text-gray-900">Player Notes — Support panel</h1>
+            <h1 class="text-xl font-semibold text-gray-900">Notas de Jugadores — Panel de soporte</h1>
             <p class="mt-1 text-sm text-gray-500">
-                Signed in as {{ auth()->user()->name }}
+                Sesión iniciada como {{ auth()->user()->name }}
                 @can('add-player-notes')
-                    <span class="ml-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">Can add notes</span>
+                    <span class="ml-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">Puede agregar notas</span>
                 @else
-                    <span class="ml-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500">Read-only</span>
+                    <span class="ml-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500">Solo lectura</span>
                 @endcan
             </p>
         </div>
 
         <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button type="submit" class="text-sm text-gray-500 hover:text-gray-700">Sign out</button>
+            <button type="submit" class="text-sm text-gray-500 hover:text-gray-700">Cerrar sesión</button>
         </form>
     </div>
 
     {{-- Player selector --}}
     <div class="mt-6">
-        <label for="player" class="block text-sm font-medium text-gray-700">Player</label>
+        <label for="player" class="block text-sm font-medium text-gray-700">Jugador</label>
         <select
             id="player"
             wire:model.live="selectedPlayerId"
             class="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
         >
-            <option value="">— Select a player —</option>
+            <option value="">— Selecciona un jugador —</option>
             @foreach ($this->players as $player)
                 <option value="{{ $player->id }}">{{ $player->name }}</option>
             @endforeach
@@ -132,14 +145,14 @@ new #[Layout('components.layouts.app')] class extends Component
     @if ($this->selectedPlayer)
         @can('add-player-notes')
             <form wire:submit="save" class="mt-6 space-y-2">
-                <label for="content" class="block text-sm font-medium text-gray-700">Add a note</label>
+                <label for="content" class="block text-sm font-medium text-gray-700">Agregar una nota</label>
                 <textarea
                     id="content"
                     wire:model="content"
                     rows="3"
                     maxlength="1000"
                     class="block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    placeholder="Write an internal note about this player..."
+                    placeholder="Escribe una nota interna sobre este jugador..."
                 ></textarea>
                 @error('content')
                     <p class="text-sm text-red-600">{{ $message }}</p>
@@ -148,7 +161,7 @@ new #[Layout('components.layouts.app')] class extends Component
                     type="submit"
                     class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500"
                 >
-                    Save note
+                    Guardar nota
                 </button>
             </form>
         @endcan
@@ -156,18 +169,18 @@ new #[Layout('components.layouts.app')] class extends Component
 
     {{-- Notes list: latest across all players, or the selected player's notes --}}
     <h2 class="mt-8 text-sm font-semibold text-gray-700">
-        {{ $this->selectedPlayer ? 'Notes for '.$this->selectedPlayer->name : 'Latest notes' }}
+        {{ $this->selectedPlayer ? 'Notas de '.$this->selectedPlayer->name : 'Últimas notas' }}
     </h2>
 
     <table class="mt-2 w-full text-left text-sm">
         <thead>
             <tr class="border-b border-gray-200 text-gray-500">
-                <th class="py-2 pr-4 font-medium">Date</th>
+                <th class="py-2 pr-4 font-medium">Fecha</th>
                 @unless ($this->selectedPlayer)
-                    <th class="py-2 pr-4 font-medium">Player</th>
+                    <th class="py-2 pr-4 font-medium">Jugador</th>
                 @endunless
-                <th class="py-2 pr-4 font-medium">Author</th>
-                <th class="py-2 font-medium">Note</th>
+                <th class="py-2 pr-4 font-medium">Autor</th>
+                <th class="py-2 font-medium">Nota</th>
             </tr>
         </thead>
         <tbody>
@@ -184,7 +197,7 @@ new #[Layout('components.layouts.app')] class extends Component
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" class="py-4 text-center text-gray-400">No notes yet.</td>
+                    <td colspan="4" class="py-4 text-center text-gray-400">Aún no hay notas.</td>
                 </tr>
             @endforelse
         </tbody>
